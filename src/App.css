@@ -1,3 +1,17 @@
+/*
+ * App.css
+ *
+ * Global styles for the root Vite + React application shell.
+ * Defines layout, logo treatments, a spinning logo animation,
+ * and helper classes for demo/example components.
+ */
+
+/* ------------------------------------------------------------------
+ * Root container
+ * ------------------------------------------------------------------
+ * Centers the application content horizontally and provides consistent
+ * page-level padding and text alignment.
+ */
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -5,19 +19,35 @@
   text-align: center;
 }
 
+/* ------------------------------------------------------------------
+ * Logo
+ * ------------------------------------------------------------------
+ * Standard logo sizing with a subtle filter transition on hover.
+ * `will-change` is used to hint the browser that the `filter`
+ * property will be animated.
+ */
 .logo {
   height: 6em;
   padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
 }
+
+/* Default hover glow using the primary brand color. */
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
+/* React-themed variant of the logo with a cyan/blue hover glow. */
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
+/* ------------------------------------------------------------------
+ * Animations
+ * ------------------------------------------------------------------
+ * Keyframe definition for a continuous 360-degree rotation.
+ */
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
@@ -27,16 +57,32 @@
   }
 }
 
+/* ------------------------------------------------------------------
+ * Motion preferences
+ * ------------------------------------------------------------------
+ * Apply the spinning animation only when the user has not requested
+ * reduced motion. The second <a> tag's logo receives the animation.
+ */
 @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;
   }
 }
 
+/* ------------------------------------------------------------------
+ * Demo card
+ * ------------------------------------------------------------------
+ * Adds uniform padding around example content cards.
+ */
 .card {
   padding: 2em;
 }
 
+/* ------------------------------------------------------------------
+ * Documentation hint
+ * ------------------------------------------------------------------
+ * Muted helper text that prompts users to read the documentation.
+ */
 .read-the-docs {
   color: #888;
 }
