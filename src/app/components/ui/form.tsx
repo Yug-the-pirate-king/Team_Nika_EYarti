@@ -16,6 +16,10 @@ import {
 import { cn } from "./utils";
 import { Label } from "./label";
 
+/**
+ * Form provider exported as `Form` for convenience.
+ * Wrap your form components with this to provide react-hook-form context.
+ */
 const Form = FormProvider;
 
 type FormFieldContextValue<
@@ -29,6 +33,10 @@ const FormFieldContext = React.createContext<FormFieldContextValue>(
   {} as FormFieldContextValue,
 );
 
+/**
+ * Connects a react-hook-form field to the form UI.
+ * Provides the field name to descendant form components via context.
+ */
 const FormField = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -42,6 +50,12 @@ const FormField = <
   );
 };
 
+/**
+ * Hook for descendant form components to access the current field state,
+ * generated accessibility IDs, and validation errors.
+ *
+ * Must be used inside a `<FormField>`.
+ */
 const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext);
   const itemContext = React.useContext(FormItemContext);
@@ -73,6 +87,10 @@ const FormItemContext = React.createContext<FormItemContextValue>(
   {} as FormItemContextValue,
 );
 
+/**
+ * Wrapper for a single form field layout item.
+ * Generates a unique ID used for accessible label/description/message associations.
+ */
 function FormItem({ className, ...props }: React.ComponentProps<"div">) {
   const id = React.useId();
 
@@ -87,6 +105,11 @@ function FormItem({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
+/**
+ * Label associated with the current form field.
+ * Automatically links to the control via `htmlFor` and styles itself when
+ * the field has a validation error.
+ */
 function FormLabel({
   className,
   ...props
@@ -96,7 +119,7 @@ function FormLabel({
   return (
     <Label
       data-slot="form-label"
-      data-error={!!error}
+      data-error={Boolean(error)}
       className={cn("data-[error=true]:text-destructive", className)}
       htmlFor={formItemId}
       {...props}
@@ -104,25 +127,33 @@ function FormLabel({
   );
 }
 
+/**
+ * Control slot for the current form field.
+ * Injects the required `id`, `aria-describedby`, and `aria-invalid` attributes
+ * for accessibility.
+ */
 function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
   const { error, formItemId, formDescriptionId, formMessageId } =
     useFormField();
+
+  const ariaDescribedBy = error
+    ? `${formDescriptionId} ${formMessageId}`
+    : formDescriptionId;
 
   return (
     <Slot
       data-slot="form-control"
       id={formItemId}
-      aria-describedby={
-        !error
-          ? `${formDescriptionId}`
-          : `${formDescriptionId} ${formMessageId}`
-      }
+      aria-describedby={ariaDescribedBy}
       aria-invalid={!!error}
       {...props}
     />
   );
 }
 
+/**
+ * Descriptive helper text for a form field.
+ */
 function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
   const { formDescriptionId } = useFormField();
 
@@ -136,9 +167,14 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
   );
 }
 
+/**
+ * Validation error message for a form field.
+ * Renders nothing when there is no error text to display.
+ * Error text is rendered as plain text to avoid unsafe HTML injection.
+ */
 function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   const { error, formMessageId } = useFormField();
-  const body = error ? String(error?.message ?? "") : props.children;
+  const body = error ? String(error.message ?? "") : props.children;
 
   if (!body) {
     return null;
