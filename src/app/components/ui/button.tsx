@@ -4,6 +4,13 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "./utils";
 
+/**
+ * Defines the reusable style variants for the {@link Button} component.
+ *
+ * Variants include visual emphasis (default, destructive, outline, secondary,
+ * ghost, link) and size options (default, sm, lg, icon). Combine these with
+ * {@link cn} for consistent, maintainable styling.
+ */
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
@@ -34,25 +41,48 @@ const buttonVariants = cva(
   },
 );
 
-function Button({
-  className,
-  variant,
-  size,
-  asChild = false,
-  ...props
-}: React.ComponentProps<"button"> &
+/**
+ * Props for the {@link Button} component.
+ *
+ * Extends native HTML `<button>` props and supports class-variance-authority
+ * variants. When `asChild` is true, props are forwarded to the immediate child
+ * element via Radix UI Slot.
+ */
+type ButtonProps = React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
+    /**
+     * Render the button as its child element, passing all props through via
+     * `@radix-ui/react-slot`.
+     *
+     * @default false
+     */
     asChild?: boolean;
-  }) {
-  const Comp = asChild ? Slot : "button";
+  };
 
-  return (
-    <Comp
-      data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
-      {...props}
-    />
-  );
-}
+/**
+ * Accessible, theme-aware button component.
+ *
+ * Supports variants, sizes, SVG icon handling, and full ref forwarding. When
+ * `asChild` is true, the component delegates rendering to its immediate child
+ * while preserving accessibility and styling props.
+ */
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    // Coerce `asChild` to a boolean at runtime to avoid accidental Slot usage.
+    const Comp = Boolean(asChild) ? Slot : "button";
+
+    return (
+      <Comp
+        data-slot="button"
+        className={cn(buttonVariants({ variant, size, className }))}
+        {...props}
+        ref={ref}
+      />
+    );
+  },
+);
+
+Button.displayName = "Button";
 
 export { Button, buttonVariants };
+export type { ButtonProps };
